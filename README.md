@@ -1,7 +1,7 @@
 # Simulation-Techniques 
 
 This project simulates the influence of weather dependency on motorcycle insurance claims. It employs Monte Carlo methods and Markov chains to model weather patterns and their impact on accidents and reimbursements.
-The repository contains the final rapport in HTML/CSS, the final R/Script file and the assignement instructions in French.
+The repository contains the final rapport in HTML/CSS (we were in a rush and as i am more at ease with html and css we ended up doing it in this format rather than latex) ,  the final R/Script file and the assignement instructions in French.
 
 I am currently preparing for my midterms that are scheduled on the second week of january so I put a hold on this project until I finish all my exams. By the the second/third week of February I will update this repo with an english rapport and english version of the assignement. 
 
