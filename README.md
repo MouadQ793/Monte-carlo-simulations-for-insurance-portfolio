@@ -1,9 +1,45 @@
-# Simulation-Techniques 
+# Monte Carlo Simulations for Insurance Portfolio
 
-This project simulates the influence of weather dependency on motorcycle insurance claims. It employs Monte Carlo methods and Markov chains to model weather patterns and their impact on accidents and reimbursements.
-The repository contains  the final R/Script file, the assignement instructions in French and the final rapport in HTML/CSS (we were in a rush and as I am more at ease with html and css we ended up doing it in this format rather than latex and HTML is directly implemented in Rstudio with R notebooks) we provide here also a pdf version of the html document, but it would be highly advised to download the html file and compile it as it renders way better. 
+## Overview
+This repository contains the code for a final assignment project in the "Simulation Techniques" course. The project involves applying **Monte Carlo simulations** to model risks in an **insurance portfolio**. The main objective is to simulate the probability of accidents and calculate insurance reimbursements based on various parameters, with a focus on the effect of weather conditions.
 
-I am currently preparing for my midterms that are scheduled on the second week of january so I put a hold on this project until I finish all my exams. By the the second/third week of February I will update this repo with an english rapport and english version of the assignement. 
+The simulations are implemented using **Markov chains** and Monte Carlo methods, where two hypotheses were tested to explore the impact of weather on the accident probabilities and insurance reimbursements.
 
-Quick notes : the only reasons parallel computing wasn't used was because one of the main difficulties was that we weren't allowed to use any library at all.
-Have fun reading :) ! 
+## Key Sections of the Report:
+- **Introduction**: Overview of the project and its objectives.
+- **Background and Context**: Explanation of the modeling approach using Markov chains and the insurance risk analysis.
+- **Parameters Setup**: Definition and interpretation of the key parameters used in the simulation.
+- **Distribution of the Law of Pr**: Methods used to simulate the law of insurance claims and optimizations.
+- **Hypothesis A & B**: Simulation of weather and accident models under different assumptions.
+- **Stationary Measure and Validity Domain**: Analysis of the stationary distribution and validation using the Gelman-Rubin criteria.
+- **Hypothesis B with C++**: Performance improvements using C++ integration for key functions.
+- **Suggestions**: Ideas for further improvements and optimizations of the model.
+- **Conclusion**: Summary of findings and reflections on the project’s performance.
+- **Final Code**: The final version of all the implemented functions.
+
+## Code Implementation
+
+The code includes the following functions and features:
+- **R Functions**: Implementations of the weather and accident models, both for **Hypothesis A** (same weather for all motorcyclists) and **Hypothesis B** (independent weather for each motorcyclist).
+- **Performance Optimizations**: Integrations with C++ (via Rcpp) to speed up time-consuming operations like `rbinom` and `sample` functions.
+- **Stationary Measure**: Implementation of a stationary measure based on Markov chain theory to optimize weather generation.
+- **Gelman-Rubin Test**: Used to verify convergence of the Markov chain to the stationary distribution.
+
+## Libraries Used
+- **Rcpp**: For C++ integration within R to improve performance in generating weather and accident data.
+- **dplyr**: For data manipulation and handling of results (if needed).
+- **ggplot2**: For visualization of the results (e.g., probability distributions and cumulative distribution functions).
+
+## Performance Results
+- The optimizations made using **C++** integration significantly improved the performance of key functions. The final tests show a considerable decrease in simulation time.
+
+## Final Code
+All the final versions of the functions, optimized and selected for the final report, are included in the repository. The code is structured in an easy-to-understand way for future improvements or adaptations.
+
+## License
+This project is open-source and can be freely used and modified under the [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+### Note:
+You can find the complete, final version of the code for each function at the end of the provided report.
