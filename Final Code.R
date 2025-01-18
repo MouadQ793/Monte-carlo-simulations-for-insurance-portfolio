@@ -5,7 +5,7 @@ rremb <- function(n, params) {
   f <- function(x) {
     return(exp(-eta * log(alpha + abs(x - x0))))
   }
-  x_vals <- seq(0, 15, length.out = 600)
+  x_vals <- seq(0, 18.5, length.out = 740)
   f_vals <- f(x_vals)
   dx <- diff(x_vals)
   cdf_vals <- cumsum((f_vals[-length(f_vals)] + f_vals[-1]) / 2 * dx)
