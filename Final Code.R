@@ -19,7 +19,6 @@ rremb <- function(n, params) {
   return(simulated_vals)
 }
 
-
 measure_Stat <- function(ptrans) {
   P_trans <- t(ptrans)
   VP <- eigen(P_trans)
@@ -133,41 +132,38 @@ msb <- function(n.simul,params){
   ))
 }
 
-msb.c <- function(n.simul, params) {
-  library(Rcpp)
-  cppFunction('#include <Rcpp.h>
-#include <random>
-using namespace Rcpp;
-
-// [[Rcpp::export]]
-IntegerMatrix simulate_weather_and_accidents(int n_simul, int N, NumericMatrix ptrans, NumericVector pacc) {
-    std::mt19937 rng(std::random_device{}());
-    std::vector<std::discrete_distribution<>> weather_distributions;
-    for (int i = 0; i < 3; ++i) {
-        weather_distributions.emplace_back(ptrans(i, _).begin(), ptrans(i, _).end());
-    }
-    IntegerMatrix accidents(n_simul, N);
-    for (int sim = 0; sim < n_simul; ++sim) {
-        for (int motard = 0; motard < N; ++motard) {
-            int weather_state = 0; // Initial météo : soleil
-            int total_accidents = 0;
-
-            for (int day = 0; day < 365; ++day) {
-                weather_state = weather_distributions[weather_state](rng);
-              if (std::generate_canonical<double, 10>(rng) < pacc[weather_state]) {
-                total_accidents++;
-              }
-}
-accidents(sim, motard) = total_accidents;
-}
+weatherbiker2cpp1 <- function(n.simul, N, measure_stat) {
+  total_values <- n.simul * 365 * N
+  
+  # Valeurs possibles et probabilités
+  values <- 1:3
+  
+  # Génération des échantillons avec la fonction C++
+  sampled_values <- sample_cpp(total_values, values, measure_stat)
+  
+  weather <- array(sampled_values, dim = c(n.simul, 365, N))
+  
+  return(weather)
 }
 
-return accidents;
+accident_MB2cppbinom <- function(n.simul, N, weather, pacc) {
+  # Mettez weather sous forme de vecteur pour calculer les probabilités directement
+  acc_prob <- pacc[as.vector(weather)]
+  accidents <- rbinom_cpp(rep(1, length(acc_prob)), acc_prob)
+  
+  # Reconstruire en matrice 3D (n.simul, 365, N)
+  accidents <- array(accidents, dim = c(n.simul, 365, N))
+  
+  return(accidents)
 }
-')
+
+msb.c <- function(n.simul,params){
+  
+  # parameters 
   N <- params$N 
   s <- params$s
   pacc <- params$pacc     
+  ## Transition probabilities 
   pSN <- params$ptrans[1]
   pNS <- params$ptrans[2]
   pNP <- params$ptrans[3]
@@ -177,20 +173,23 @@ return accidents;
                     pNS, 1- pNP - pNS, pNP,
                     0.0, pPN, 1-pPN), nrow = 3, byrow = TRUE)
   
-  trans <- matrix(rep(measure_Stat(ptrans), each = 3), nrow = 3, byrow = TRUE)
-  accidents <- simulate_weather_and_accidents(n.simul, N, trans , pacc)
-  total_accidents_sim <- rowSums(accidents)
-  sinistres <- sapply(total_accidents_sim, function(total_accidents) {
-    sum(rremb(total_accidents, params))
-  })
-  ms_values <- sinistres[sinistres > s] - s
+  #Weather 
+  weather <- weatherbiker2cpp1(n.simul,N)
+  
+  #prob acc
+  acc_prob <- pacc[weather]
+  #accident total
+  accidents_sim_motard <- accident_MB2cppbinom(n.simul, N, weather, pacc)
+  accidents_sim <- apply(accidents_sim_motard, 1, sum)
+  sinistre <- sapply(accidents_sim, function(x) sum(rremb(x, params)))
+  ms_values <- sinistre[sinistre > s] - s
   if (length(ms_values) == 0) {
     warning("Aucune valeur de R n'est supérieure à s.")
     return(list(ms = 0, demi.largeur = 0))
   }
+  #returning the mean of the values when it's higher than s and the half width for a 95 % confidence 
   ms <- mean(ms_values)
   demi.largeur <- half_width(ms_values)
-  
   return(list(
     ms = ms,
     demi.largeur = demi.largeur
